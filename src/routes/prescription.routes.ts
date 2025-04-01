@@ -8,14 +8,14 @@ import {
     createPrescription,
     updatePrescription,
     deletePrescription,
-    makeCall,
+    initiateCall,
 } from '../controllers/prescription.controller';
 
 const router = express.Router();
 
 router.get('/', protect, getPrescriptions);
 router.get('/:id', protect, getPrescription);
-router.post('/:id/call', protect, makeCall);
+router.post('/:id/call', protect, initiateCall);
 router.post('/', protect, createPrescription);
 router.put('/:id', protect, updatePrescription);
 router.delete('/:id', protect, deletePrescription);

@@ -7,6 +7,8 @@ import CallLog from '../models/call-log.model';
 import Prescription from '../models/prescription.model';
 
 import { CallLogStatus } from '../utils/types';
+
+import CallService from '../services/call.service';
 import { ApiError, handleControllerError } from '../middleware/error-handler';
 
 const prescriptionSchema = yup.object().shape({
@@ -125,9 +127,9 @@ export const deletePrescription = async (req: Request, res: Response, next: Next
     }
 }
 
-export const makeCall = async (req: Request, res: Response, next: NextFunction) => {
+export const initiateCall = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const prescription = await Prescription.findById(req.params.id)
+        const prescription = await Prescription.findById(req.params.id).populate('patient');
         if (!prescription) {
             return next(new ApiError(404, 'Prescription not found'));
         }
@@ -138,6 +140,9 @@ export const makeCall = async (req: Request, res: Response, next: NextFunction) 
             status: CallLogStatus.PENDING,
         })
 
+        const callService = new CallService(callLog);
+
+        callService.makeCall(prescription);
         // Make a callLog to the patient
         // If the callLog is successful, update the callLog status to COMPLETED
         // Use speech to text to capture the patient's response & record it
