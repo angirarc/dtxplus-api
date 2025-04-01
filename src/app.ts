@@ -6,8 +6,9 @@ import mongoose from 'mongoose';
 import { errorHandler } from './middleware/error-handler';
 
 import authRoutes from './routes/auth.routes';
-import callLogRoutes from './routes/call-log.routes';
 import patientRoutes from './routes/patient.routes';
+import webhookRoutes from './routes/webhooks.routes';
+import callLogRoutes from './routes/call-log.routes';
 import prescriptionRoutes from './routes/prescription.routes';
 
 dotenv.config();
@@ -30,8 +31,9 @@ mongoose.connect(MONGODB_URI)
 
 // Routes 
 app.use('/auth', authRoutes);
-app.use('/call-logs', callLogRoutes);
+app.use('/webhooks', webhookRoutes);
 app.use('/patients', patientRoutes);
+app.use('/call-logs', callLogRoutes);
 app.use('/prescriptions', prescriptionRoutes);
 
 app.listen(PORT, () => {

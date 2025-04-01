@@ -15,8 +15,8 @@ const router = express.Router();
 
 router.get('/', protect, getPrescriptions);
 router.get('/:id', protect, getPrescription);
-router.post('/:id/call', protect, initiateCall);
 router.post('/', protect, createPrescription);
+router.post('/:id/call', protect, initiateCall);
 router.put('/:id', protect, updatePrescription);
 router.delete('/:id', protect, deletePrescription);
 

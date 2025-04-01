@@ -4,8 +4,8 @@ export interface ICallLog extends Document {
     patient: Schema.Types.ObjectId;
     prescription: Schema.Types.ObjectId;
     status: string;
-    transcript?: string;
-    phoneCallURL?: string;
+    transcript?: string[];
+    phoneCallSid?: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -21,6 +21,12 @@ const CallLogSchema = new Schema<ICallLog>({
         ref: 'Prescription',
         required: [true, 'Please provide a prescription'],
     },
+    transcript: [
+        {
+            type: String,
+            trim: true,
+        },
+    ],
     status: {
         type: String,
         required: [true, 'Please provide a status'],

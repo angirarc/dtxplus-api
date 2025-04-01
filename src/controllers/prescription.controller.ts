@@ -37,7 +37,7 @@ const prescriptionSchema = yup.object().shape({
 
 export const getPrescriptions = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const prescriptions = await Prescription.find()
+        const prescriptions = await Prescription.find().populate('patient');
 
         res.status(200).json({
             success: true,
@@ -142,6 +142,7 @@ export const initiateCall = async (req: Request, res: Response, next: NextFuncti
 
         const callService = new CallService(callLog);
 
+        // callService.testCall(prescription);
         callService.makeCall(prescription);
         // Make a callLog to the patient
         // If the callLog is successful, update the callLog status to COMPLETED
