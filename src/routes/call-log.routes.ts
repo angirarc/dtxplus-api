@@ -3,16 +3,14 @@ import express from 'express';
 import { protect } from '../middleware/auth.middleware';
 
 import {
-    getCalls,
-    getCall,
-    makeCall,
-} from '../controllers/call.controller';
+    getCallLogs,
+    getCallLog,
+} from '../controllers/call-log.controller';
 
 const router = express.Router();
 
 // Routes accessible by all authenticated users
-router.get('/', protect, getCalls);
-router.get('/:id', protect, getCall);
-router.post('/:id', protect, makeCall);
+router.get('/', protect, getCallLogs);
+router.get('/:id', protect, getCallLog);
 
 export default router;

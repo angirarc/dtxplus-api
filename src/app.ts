@@ -5,7 +5,8 @@ import mongoose from 'mongoose';
 
 import { errorHandler } from './middleware/error-handler';
 
-import callRoutes from './routes/call.routes';
+import authRoutes from './routes/auth.routes';
+import callLogRoutes from './routes/call-log.routes';
 import patientRoutes from './routes/patient.routes';
 import prescriptionRoutes from './routes/prescription.routes';
 
@@ -28,7 +29,8 @@ mongoose.connect(MONGODB_URI)
   .catch(err => console.error('MongoDB connection error:', err));
 
 // Routes 
-app.use('/calls', callRoutes);
+app.use('/auth', authRoutes);
+app.use('/call-logs', callLogRoutes);
 app.use('/patients', patientRoutes);
 app.use('/prescriptions', prescriptionRoutes);
 

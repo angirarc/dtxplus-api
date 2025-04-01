@@ -1,5 +1,5 @@
-export enum CallStatus {
+export enum CallLogStatus {
     PENDING = 'pending',
     ANSWERED = 'answered',
-    MISSED = 'missed',
+    VOICEMAIL = 'voicemaill left',
 }

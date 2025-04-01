@@ -2,8 +2,11 @@ import yup from 'yup';
 
 import type { NextFunction, Request, Response } from 'express';
 
+import Patient from '../models/patient.model';
+import CallLog from '../models/call-log.model';
 import Prescription from '../models/prescription.model';
 
+import { CallLogStatus } from '../utils/types';
 import { ApiError, handleControllerError } from '../middleware/error-handler';
 
 const prescriptionSchema = yup.object().shape({
@@ -61,6 +64,11 @@ export const getPrescription = async (req: Request, res: Response, next: NextFun
 
 export const createPrescription = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        let patient = await Patient.findById(req.body.patient);
+        if (!patient) {
+          return next(new ApiError(404, 'Patient not found'));
+        }
+
         const validatedData = await prescriptionSchema.validate(req.body, { abortEarly: false });
         
         const prescription = await Prescription.create(validatedData);
@@ -81,6 +89,11 @@ export const updatePrescription = async (req: Request, res: Response, next: Next
           return next(new ApiError(404, 'Prescription not found'));
         }
 
+        let patient = await Patient.findById(req.body.patient);
+        if (!patient) {
+          return next(new ApiError(404, 'Patient not found'));
+        }
+
         const validatedData = await prescriptionSchema.validate(req.body, { abortEarly: false });
         
         prescription = await Prescription.create(validatedData);
@@ -92,7 +105,6 @@ export const updatePrescription = async (req: Request, res: Response, next: Next
     } catch (error) {
         return handleControllerError(error, next);
     }
-
 }
 
 export const deletePrescription = async (req: Request, res: Response, next: NextFunction) => {
@@ -107,6 +119,35 @@ export const deletePrescription = async (req: Request, res: Response, next: Next
         res.status(200).json({
             success: true,
             data: prescription
+        });
+    } catch (error) {
+        return handleControllerError(error, next);
+    }
+}
+
+export const makeCall = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const prescription = await Prescription.findById(req.params.id)
+        if (!prescription) {
+            return next(new ApiError(404, 'Prescription not found'));
+        }
+
+        const callLog = await CallLog.create({
+            patient: prescription.patient,
+            prescription: prescription._id,
+            status: CallLogStatus.PENDING,
+        })
+
+        // Make a callLog to the patient
+        // If the callLog is successful, update the callLog status to COMPLETED
+        // Use speech to text to capture the patient's response & record it
+        // Log CallLog ID, status (e.g., answered, voicemail left, SMS sent
+        // If the callLog is unsuccessful, update the callLog status to FAILED
+        // Attempt to leave voicemail, if voicemail not available, send SMS
+
+        res.status(201).json({
+            success: true,
+            data: callLog
         });
     } catch (error) {
         return handleControllerError(error, next);

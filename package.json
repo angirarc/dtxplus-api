@@ -2,6 +2,13 @@
   "name": "medical-reminder-api",
   "module": "src/app.ts",
   "type": "module",
+  "scripts": {
+    "start": "bun run src/app.ts",
+    "dev": "bun run src/app.ts --watch",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "license": "MIT",
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/bun": "latest",

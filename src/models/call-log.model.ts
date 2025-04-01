@@ -1,15 +1,16 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-export interface ICall extends Document {
+export interface ICallLog extends Document {
     patient: Schema.Types.ObjectId;
     prescription: Schema.Types.ObjectId;
     status: string;
-    userResponse?: string;
+    transcript?: string;
+    phoneCallURL?: string;
     createdAt: Date;
     updatedAt: Date;
 }
 
-const CallSchema = new Schema<ICall>({
+const CallLogSchema = new Schema<ICallLog>({
     patient: {
         type: Schema.Types.ObjectId,
         ref: 'Patient',
@@ -25,10 +26,6 @@ const CallSchema = new Schema<ICall>({
         required: [true, 'Please provide a status'],
         trim: true,
     },
-    userResponse: {
-        type: String,
-        trim: true,
-    },
 }, { timestamps: true });
 
-export default mongoose.model<ICall>('Call', CallSchema);
+export default mongoose.model<ICallLog>('CallLog', CallLogSchema);
