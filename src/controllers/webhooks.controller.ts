@@ -10,9 +10,9 @@ import CallService from '../services/call.service';
 
 const VoiceResponse = twilio.twiml.VoiceResponse;
 
-export const handleCallInput = async (req: Request, res: Response) => {
-    const twiml = new VoiceResponse();
+export const receiveCall = async (req: Request, res: Response) => {
     console.log(req.body)
+    const twiml = new VoiceResponse();
 
     const callLog = await CallLog.findOne({ phoneCallSid: req.body.CallSid });
     if (!callLog) {

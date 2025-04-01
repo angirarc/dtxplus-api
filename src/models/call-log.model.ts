@@ -6,6 +6,7 @@ export interface ICallLog extends Document {
     status: string;
     transcript?: string[];
     phoneCallSid?: string;
+    phoneCallUrl?: string;
     createdAt: Date;
     updatedAt: Date;
 }

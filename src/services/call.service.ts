@@ -1,13 +1,14 @@
 import twilio from 'twilio';
-import { pipeline } from 'stream/promises';
+import type { Request } from 'express';
+// import { pipeline } from 'stream/promises';
 import { createClient } from '@deepgram/sdk';
 
+import CallLog from '../models/call-log.model';
+
+import { CallLogStatus } from '../utils/types';
 import type { IPatient } from '../models/patient.model';
 import type { ICallLog } from '../models/call-log.model';
 import type { IPrescription } from '../models/prescription.model';
-
-import { CallLogStatus } from '../utils/types';
-import type { Request } from 'express';
 
 const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER, NGROK_URL, DEEPGRAM_API_KEY } = process.env;
 
@@ -59,9 +60,9 @@ class CallService {
 
         const gather = twiml.gather({
             input: ['dtmf', 'speech'],
-            timeout: 5,
+            // timeout: 5,
             numDigits: 1,
-            action: '/webhooks/receive', // Webhook to handle user input
+            action: `${NGROK_URL}/webhooks/receive`,
             method: 'POST',
             speechTimeout: 'auto',
             speechModel: 'phone_call',
@@ -82,10 +83,11 @@ class CallService {
                 method: 'POST',
                 // url: `${NGROK_URL}/webhooks/receive`,
                 // applicationSid: this.callLog.id,
-                statusCallback: '/call-logs/status',
+                statusCallback: `${NGROK_URL}/webhooks/status`,
                 statusCallbackEvent: ['initiated', 'ringing', 'answered', 'completed', 'busy', 'no-answer', 'failed', 'canceled'],
                 statusCallbackMethod: 'POST',
-                twiml: twiml.toString()
+                twiml: twiml.toString(),
+                record: true
             }, async (error, response) => {
                 if (error) {
                     console.error('Error making call:', error);
@@ -93,8 +95,10 @@ class CallService {
                 }
                 
                 if (response) {
-                    this.callLog.phoneCallSid = response.sid;
-                    await this.callLog.save();
+                    await CallLog.findOneAndUpdate({ _id: this.callLog.id }, {
+                        phoneCallSid: response.sid,
+                        phoneCallUrl: response.recordings()._uri
+                    });
                 }
             });
         } catch (error) {
