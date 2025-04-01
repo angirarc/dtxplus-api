@@ -1,10 +1,10 @@
 import express from 'express';
 
-import { receiveCall, handleCallStatus } from '../controllers/webhooks.controller';
+import { receiveCall, handleCallStatusUpdate } from '../controllers/webhooks.controller';
 
 const router = express.Router();
 
 router.post('/receive', receiveCall);
-router.post('/status', handleCallStatus);
+router.post('/status', handleCallStatusUpdate);
 
 export default router;

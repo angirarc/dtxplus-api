@@ -17,6 +17,8 @@ const deepgramClient = createClient(DEEPGRAM_API_KEY);
 
 const VoiceResponse = twilio.twiml.VoiceResponse;
 
+const failedStates = ["busy", "failed", "no-answer", "canceled"];
+
 interface Prescription extends Omit<IPrescription, 'patient'> {
     patient: IPatient | any;
 }
@@ -36,7 +38,7 @@ class CallService {
         return `Hello ${prescription.patient.name}, this is a reminder from your healthcare provider to confirm your medications for the day. Please confirm if you have taken your ${medications} today.`;
     }
 
-    public async updateCallLog(status: CallLogStatus) {
+    public async updateStatus(status: CallLogStatus) {
         this.callLog.status = status;
         await this.callLog.save();
     }
@@ -89,13 +91,14 @@ class CallService {
                 twiml: twiml.toString(),
                 record: true
             }, async (error, response) => {
+                console.log({ error, response })
                 if (error) {
                     console.error('Error making call:', error);
                     throw error;
                 }
                 
                 if (response) {
-                    await CallLog.findOneAndUpdate({ _id: this.callLog.id }, {
+                    await CallLog.findOneAndUpdate({ _id: this.callLog._id }, {
                         phoneCallSid: response.sid,
                         phoneCallUrl: response.recordings()._uri
                     });
@@ -104,7 +107,7 @@ class CallService {
         } catch (error) {
             console.error('Error making call:', error);
 
-            await this.updateCallLog(CallLogStatus.VOICEMAIL);
+            await this.updateStatus(CallLogStatus.VOICEMAIL);
 
             await this.sendMessage(prescription);
 
@@ -115,7 +118,7 @@ class CallService {
     public async receiveCall(req: Request) {
         try {
             let responseMessage = '';
-            const { Digits, SpeechResult } = req.body;
+            const { Digits, SpeechResult } = req.params;
             const userInput = Digits || SpeechResult;
             const input = `Patient: ${userInput}`;
     
@@ -136,7 +139,7 @@ class CallService {
                 $set: { status: CallLogStatus.ANSWERED },
                 $push: { transcript: `${input} - (Unclear patient response)` }
               });
-              responseMessage = 'Thank you for your response. We recommend taking your medication as prescribed. Your healthcare provider will be notified.';
+              responseMessage = 'Thank you for your response. We recommend taking your medication as prescribed. Your healthcare provider will be notified. Goodbye.';
             }
 
             this.twiml.say({ voice: 'alice' }, responseMessage);
@@ -145,10 +148,18 @@ class CallService {
             return this.twiml.toString();
         } catch (error) {
             console.log({error})
-            this.twiml.say({ voice: 'alice' }, 'We encountered an error processing your response. Please contact your healthcare provider.');
+            this.twiml.say({ voice: 'alice' }, 'We encountered an error processing your response. Please contact your healthcare provider. Goodbye.');
             this.twiml.hangup();
 
             return this.twiml.toString();
+        }
+    }
+
+    public async handleFailedStates(req: Request, prescription: Prescription) {
+        try {
+            // Send voicemail
+        } catch (error) {
+            this.sendMessage(prescription as any);
         }
     }
 
