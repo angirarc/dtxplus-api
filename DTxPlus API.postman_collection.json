@@ -213,7 +213,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"url\": \"https://api.twilio.com/2010-04-01/Accounts/{account_sid}/Recordings/{recording_sid}\"\n}"
+							"raw": "{}"
 						},
 						"url": "{{base_url}}/call-logs/67ec7b30df5b88fb491e4e32/transcribe",
 						"description": "Make a call for a prescription"
