@@ -27,8 +27,8 @@ const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/hisani-erp';
 
 mongoose.connect(MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
+    .then(() => console.log('Connected to MongoDB'))
+    .catch(err => console.error('MongoDB connection error:', err));
 
 // Routes 
 app.use('/auth', authRoutes);
@@ -37,7 +37,14 @@ app.use('/patients', patientRoutes);
 app.use('/call-logs', callLogRoutes);
 app.use('/prescriptions', prescriptionRoutes);
 
-app.use('/audio', express.static('src/audio'));
+app.use('/audio', cors(), express.static('src/audio', {
+    setHeaders: (res, path) => {
+        if (path.endsWith('.mp3')) {
+            res.set('Content-Type', 'audio/mpeg');
+            res.set('Access-Control-Allow-Origin', '*');
+        }
+    }
+}));
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

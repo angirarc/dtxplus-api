@@ -1,0 +1,420 @@
+{
+	"info": {
+		"_postman_id": "90435d07-e8b5-4b81-958d-5a941e7ba2a3",
+		"name": "DTxPlus API",
+		"description": "A collection for the DTxPlus Medical Reminder API endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "5897124"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Reinhardt Angira\",\n    \"email\": \"reinhardtcollins@live.com\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": "{{base_url}}/auth/register",
+						"description": "Register a new user"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"reinhardtcollins@live.com\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": "{{base_url}}/auth/login",
+						"description": "Login with existing credentials"
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication endpoints"
+		},
+		{
+			"name": "Patients",
+			"item": [
+				{
+					"name": "Get All Patients",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": "{{base_url}}/patients",
+						"description": "Get a list of all patients"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Patient by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": "{{base_url}}/patients/67ebffc1a6b27a87ba0f193d",
+						"description": "Get a specific patient by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Patient",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Reinhardt Angira\",\n    \"phone\": \"+254710127370\",\n    \"location\": \"Nairobi\"\n}"
+						},
+						"url": "{{base_url}}/patients",
+						"description": "Create a new patient"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Patient",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Reinhardt Angira\",\n    \"phone\": \"+254710127370\",\n    \"location\": \"Nairobi\"\n}"
+						},
+						"url": "{{base_url}}/patients/67ebffc1a6b27a87ba0f193d",
+						"description": "Update an existing patient"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Patient",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": "{{base_url}}/patients/67ebffc1a6b27a87ba0f193d",
+						"description": "Delete a patient"
+					},
+					"response": []
+				}
+			],
+			"description": "Patient management endpoints"
+		},
+		{
+			"name": "Call Logs",
+			"item": [
+				{
+					"name": "Get All Call Logs",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": "{{base_url}}/call-logs",
+						"description": "Get a list of all calls"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Call by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/calls/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"calls",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "call_id_here",
+									"description": "The ID of the call"
+								}
+							]
+						},
+						"description": "Get a specific call by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Transacribe Call",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"url\": \"https://api.twilio.com/2010-04-01/Accounts/AC9e518c3c7494acf927c4016790b41e79/Recordings/RE757887ed887c2fb576737468af7ab540\"\n}"
+						},
+						"url": "{{base_url}}/call-logs/67ec7b30df5b88fb491e4e32/transcribe",
+						"description": "Make a call for a prescription"
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Audio",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"text\": \"We didn't receive your response. We'll send you a text message as a reminder. Goodbye!\"\n}"
+						},
+						"url": "{{base_url}}/call-logs/67ec7b30df5b88fb491e4e32/generate",
+						"description": "Make a call for a prescription"
+					},
+					"response": []
+				}
+			],
+			"description": "Call management endpoints"
+		},
+		{
+			"name": "Prescriptions",
+			"item": [
+				{
+					"name": "Get All Prescriptions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": "{{base_url}}/prescriptions",
+						"description": "Get a list of all prescriptions"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Prescription by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": "{{base_url}}/prescriptions/67ec1d132770b957da2bfcba",
+						"description": "Get a specific prescription by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Prescription",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"patient\": \"67ec1d072770b957da2bfcb7\",\n    \"schedules\": [\n        {\n            \"drugName\": \"Paracetamol\",\n            \"dosage\": 500,\n            \"frequency\": 3,\n            \"duration\": 7,\n            \"durationUnit\": \"days\"\n        }\n    ]\n}"
+						},
+						"url": "{{base_url}}/prescriptions",
+						"description": "Create a new prescription"
+					},
+					"response": []
+				},
+				{
+					"name": "Initiate Phone Call",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": "{{base_url}}/prescriptions/67ec1d132770b957da2bfcba/call",
+						"description": "Create a new prescription"
+					},
+					"response": []
+				},
+				{
+					"name": "Send Message",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": "{{base_url}}/prescriptions/67ec1d132770b957da2bfcba/text",
+						"description": "Create a new prescription"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Prescription",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"patient\": \"patient_id_here\",\n    \"schedules\": [\n        {\n            \"drugName\": \"Paracetamol\",\n            \"dosage\": 500,\n            \"frequency\": 2,\n            \"duration\": 5,\n            \"durationUnit\": \"days\"\n        },\n        {\n            \"drugName\": \"Ibuprofen\",\n            \"dosage\": 400,\n            \"frequency\": 2,\n            \"duration\": 3,\n            \"durationUnit\": \"days\"\n        }\n    ]\n}"
+						},
+						"url": "{{base_url}}/prescriptions/67ec1d132770b957da2bfcba",
+						"description": "Update an existing prescription"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Prescription",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": "{{base_url}}/prescriptions/67ec1d132770b957da2bfcba",
+						"description": "Delete a prescription"
+					},
+					"response": []
+				}
+			],
+			"description": "Prescription management endpoints"
+		},
+		{
+			"name": "Webhooks",
+			"item": [
+				{
+					"name": "Receive Call",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"Digits\": 1,\n    \"CallSid\": \"https://twilio.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{ngrokUrl}}/webhooks/receive"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "your_jwt_token_here",
+			"type": "string"
+		}
+	]
+}
