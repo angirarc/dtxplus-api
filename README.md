@@ -15,12 +15,14 @@ bun install
 
 ## Environment Configuration
 ```
+MONGODB_URI=mongodb://****
+JWT_SECRET=your_jwt_secret_key
+PORT=3000
 TWILIO_ACCOUNT_SID=your_account_sid
 TWILIO_AUTH_TOKEN=your_auth_token
 TWILIO_PHONE_NUMBER=+1234567890
-MONGODB_URI=mongodb://localhost:27017/medical-reminders
 SERVER_URL=public_url_for_twilio_callbacks
-JWT_SECRET=your_jwt_secret_key
+DEEPGRAM_API_KEY=your_deepgram_api_key
 ```
 
 ## API Endpoints
