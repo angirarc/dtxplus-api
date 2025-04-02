@@ -26,6 +26,18 @@ SERVER_URL=public_url_for_twilio_callbacks
 DEEPGRAM_API_KEY=your_deepgram_api_key
 ```
 
+## Running the Server
+```bash
+bun start
+```
+
+## Using Postman Collection
+1. Import `DTxPlus API.postman_collection.json`
+2. Set environment variables:
+  - `base_url`: http://localhost:3000
+  - `auth_token`: JWT from login
+3. Follow collection structure for all API operations
+
 ## API Endpoints
 
 ### Authentication
@@ -110,15 +122,3 @@ DEEPGRAM_API_KEY=your_deepgram_api_key
 - **POST /webhooks/receive** - Receive Phone Call
 - **POST /webhooks/voicemail** - Leaving Voicemail if Machine Receives the Call
 - **POST /webhooks/status** - Handle Status Updates
-
-## Using Postman Collection
-1. Import `DTxPlus API.postman_collection.json`
-2. Set environment variables:
-  - `base_url`: http://localhost:3000
-  - `auth_token`: JWT from login
-3. Follow collection structure for all API operations
-
-## Running the Server
-```bash
-bun start
-```
