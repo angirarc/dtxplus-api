@@ -34,22 +34,21 @@ export const handleCallStatusUpdate = async (req: Request, res: Response) => {
 
     try {
         const callLog = await CallLog.findOne({ phoneCallSid: CallSid });
-
         if (!callLog) {
             console.error('Call log not found for SID:', CallSid);
             return res.status(200).send();
         }
 
+        const callService = new CallService(callLog);
+        console.log('status', CallStatus)
+        console.log('sid', CallSid)
+        console.log('url', RecordingUrl)
         if (CallStatus === 'completed') {
-            callLog.status = CallLogStatus.ANSWERED;
-            callLog.phoneCallUrl = RecordingUrl;
-            
-            await callLog.save();
+            await callService.updateStatus(CallLogStatus.ANSWERED, RecordingUrl);
         } else if (!intermediateStates.includes(CallStatus))  {
             const prescription = await Prescription.findById(callLog.prescription).populate('patient');
             if (prescription) {
-                const callService = new CallService(callLog);
-                callService.handleFailedStates(req, prescription);
+                callService.leaveVoicemail(prescription);
             }
         }
 
