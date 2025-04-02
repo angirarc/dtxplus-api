@@ -5,20 +5,22 @@ import type { Request, Response } from 'express';
 import CallLog from '../models/call-log.model';
 import Prescription from '../models/prescription.model';
 
-import { CallLogStatus } from '../utils/types';
+import { CallLogStatus, AudioPresets } from '../utils/types';
+
 import CallService from '../services/call.service';
+
+const { SERVER_URL } = process.env;
 
 const VoiceResponse = twilio.twiml.VoiceResponse;
 
-const intermediateStates = ["queued", "ringing", "in-progress"];
+const intermediateStates = ["initiated", "queued", "ringing", "in-progress"];
 
 export const receiveCall = async (req: Request, res: Response) => {
-    console.log(req.params)
     const twiml = new VoiceResponse();
 
-    const callLog = await CallLog.findOne({ phoneCallSid: req.params.CallSid });
+    const callLog = await CallLog.findOne({ phoneCallSid: req.body.CallSid });
     if (!callLog) {
-        twiml.say({ voice: 'alice' }, 'Thank you for your response. Goodbye.');
+        twiml.play(`${SERVER_URL}/audio/${AudioPresets.ERROR}`)
         twiml.hangup();
         return res.type('text/xml').send(twiml.toString());
     }
@@ -29,8 +31,22 @@ export const receiveCall = async (req: Request, res: Response) => {
     return res.type('text/xml').send(resp);
 };
 
+export const leaveVoiceMail = async (req: Request, res: Response) => {
+    const twiml = new VoiceResponse();
+    const callLog = await CallLog.findOne({ phoneCallSid: req.body.CallSid });
+    if (!callLog) {
+        twiml.play(`${SERVER_URL}/audio/${AudioPresets.ERROR}`)
+        twiml.hangup();
+        return res.type('text/xml').send(twiml.toString());
+    }
+
+    const callService = new CallService(callLog);
+    const resp = await callService.leaveVoicemail();
+    return res.type('text/xml').send(resp);
+}
+
 export const handleCallStatusUpdate = async (req: Request, res: Response) => {
-    const { CallSid, CallStatus, RecordingUrl } = req.params;
+    const { CallSid, CallStatus, RecordingUrl } = req.body;
 
     try {
         const callLog = await CallLog.findOne({ phoneCallSid: CallSid });
@@ -40,15 +56,12 @@ export const handleCallStatusUpdate = async (req: Request, res: Response) => {
         }
 
         const callService = new CallService(callLog);
-        console.log('status', CallStatus)
-        console.log('sid', CallSid)
-        console.log('url', RecordingUrl)
         if (CallStatus === 'completed') {
             await callService.updateStatus(CallLogStatus.ANSWERED, RecordingUrl);
         } else if (!intermediateStates.includes(CallStatus))  {
             const prescription = await Prescription.findById(callLog.prescription).populate('patient');
             if (prescription) {
-                callService.leaveVoicemail(prescription);
+                callService.sendMessage(prescription);
             }
         }
 

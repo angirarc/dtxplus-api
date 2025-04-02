@@ -142,14 +142,33 @@ export const initiateCall = async (req: Request, res: Response, next: NextFuncti
 
         const callService = new CallService(callLog);
 
-        // callService.testCall(prescription);
         callService.makeCall(prescription);
-        // Make a callLog to the patient
-        // If the callLog is successful, update the callLog status to COMPLETED
-        // Use speech to text to capture the patient's response & record it
-        // Log CallLog ID, status (e.g., answered, voicemail left, SMS sent
-        // If the callLog is unsuccessful, update the callLog status to FAILED
-        // Attempt to leave voicemail, if voicemail not available, send SMS
+
+        res.status(201).json({
+            success: true,
+            data: callLog
+        });
+    } catch (error) {
+        return handleControllerError(error, next);
+    }
+}
+
+export const sendMessage = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const prescription = await Prescription.findById(req.params.id).populate('patient');
+        if (!prescription) {
+            return next(new ApiError(404, 'Prescription not found'));
+        }
+
+        const callLog = await CallLog.create({
+            patient: prescription.patient,
+            prescription: prescription._id,
+            status: CallLogStatus.PENDING,
+        })
+
+        const callService = new CallService(callLog);
+
+        callService.sendMessage(prescription);
 
         res.status(201).json({
             success: true,

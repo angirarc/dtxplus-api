@@ -26,6 +26,14 @@ const CallLogSchema = new Schema<ICallLog>({
         type: String,
         trim: true,
     },
+    phoneCallSid: {
+        type: String,
+        trim: true,
+    },
+    phoneCallUrl: {
+        type: String,
+        trim: true,
+    },
     status: {
         type: String,
         required: [true, 'Please provide a status'],

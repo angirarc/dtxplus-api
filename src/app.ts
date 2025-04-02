@@ -18,6 +18,7 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Error handling middleware
 app.use(errorHandler);
@@ -35,6 +36,8 @@ app.use('/webhooks', webhookRoutes);
 app.use('/patients', patientRoutes);
 app.use('/call-logs', callLogRoutes);
 app.use('/prescriptions', prescriptionRoutes);
+
+app.use('/audio', express.static('src/audio'));
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
