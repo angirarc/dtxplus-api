@@ -1,7 +1,8 @@
 # Medical Reminder API
 
 ```bash
-I chose bun for this project because of the native support for TypeScript and the speed of execution but yarn and npm can also be used.
+I chose bun for this project because of the native support for TypeScript and the 
+speed of execution but yarn and npm can also be used.
 ```
 
 ## Setup
@@ -40,16 +41,20 @@ DEEPGRAM_API_KEY=your_deepgram_api_key
 
 ### Prescriptions
 - **GET /prescriptions** - List all prescriptions
+- **GET /prescriptions/:id** - Get prescription by ID
 - **POST /prescriptions** - Create new prescription
 - **POST /prescriptions/:id/call** - Initiate reminder call
-- **POST /prescriptions/:id/text** - Send SMS reminder
 - **PUT /prescriptions/:id** - Update prescription
 - **DELETE /prescriptions/:id** - Delete prescription
 
 ### Call Logs
-- **GET /call-logs** - List all call records
-- **POST /call-logs/:id/transcribe** - Transcribe call recording
-- **POST /call-logs/:id/generate** - Generate audio from text
+- **GET /call-logs** - List all call logs
+- **GET /call-logs/:id** - Get Call Log by ID
+
+### Web Hooks
+- **POST /webhooks/receive** - Receive Phone Call
+- **POST /webhooks/voicemail** - Leaving Voicemail if Machine Receives the Call
+- **POST /webhooks/status** - Handle Status Updates
 
 ## Using Postman Collection
 1. Import `DTxPlus API.postman_collection.json`
