@@ -11,8 +11,32 @@ import { CallLogStatus } from '../utils/types';
 import CallService from '../services/call.service';
 import { ApiError, handleControllerError } from '../middleware/error-handler';
 
-const prescriptionSchema = yup.object().shape({
+const createPrescriptionSchema = yup.object().shape({
     patient: yup.string().required('Patient ID is required'),
+    schedules: yup.array().of(
+        yup.object().shape({
+            drugName: yup.string()
+                .required('Drug name is required')
+                .max(50, 'Drug Name cannot be more than 50 characters')
+                .trim(),
+            dosage: yup.number()
+                .required('Dosage is required')
+                .positive('Dosage must be a positive number'),
+            frequency: yup.number()
+                .required('Frequency is required')
+                .positive('Frequency must be a positive number'),
+            duration: yup.number()
+                .required('Duration is required')
+                .positive('Duration must be a positive number'),
+            durationUnit: yup.string()
+                .required('Duration unit is required')
+                .trim()
+        })
+    ).min(1, 'At least one schedule is required')
+});
+
+
+const updatePrescriptionSchema = yup.object().shape({
     schedules: yup.array().of(
         yup.object().shape({
             drugName: yup.string()
@@ -71,7 +95,7 @@ export const createPrescription = async (req: Request, res: Response, next: Next
           return next(new ApiError(404, 'Patient not found'));
         }
 
-        const validatedData = await prescriptionSchema.validate(req.body, { abortEarly: false });
+        const validatedData = await createPrescriptionSchema.validate(req.body, { abortEarly: false });
         
         const prescription = await Prescription.create(validatedData);
 
@@ -96,7 +120,7 @@ export const updatePrescription = async (req: Request, res: Response, next: Next
           return next(new ApiError(404, 'Patient not found'));
         }
 
-        const validatedData = await prescriptionSchema.validate(req.body, { abortEarly: false });
+        const validatedData = await updatePrescriptionSchema.validate(req.body, { abortEarly: false });
         
         prescription = await Prescription.create(validatedData);
 
