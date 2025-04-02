@@ -16,33 +16,44 @@ const VoiceResponse = twilio.twiml.VoiceResponse;
 const intermediateStates = ["initiated", "queued", "ringing", "in-progress"];
 
 export const receiveCall = async (req: Request, res: Response) => {
-    const twiml = new VoiceResponse();
+    try {
+        const twiml = new VoiceResponse();
 
-    const callLog = await CallLog.findOne({ phoneCallSid: req.body.CallSid });
-    if (!callLog) {
-        twiml.play(`${SERVER_URL}/audio/${AudioPresets.ERROR}`)
-        twiml.hangup();
-        return res.type('text/xml').send(twiml.toString());
+        const callLog = await CallLog.findOne({ phoneCallSid: req.body.CallSid });
+        if (!callLog) {
+            twiml.play(`${SERVER_URL}/audio/${AudioPresets.ERROR}`)
+            twiml.hangup();
+            return res.type('text/xml').send(twiml.toString());
+        }
+
+        const callService = new CallService(callLog);
+        const resp = await callService.receiveCall(req);
+
+        return res.type('text/xml').send(resp);
+    } catch (error) {
+        console.error('Error receiving call:', error);
+        return res.status(500).send();
     }
-
-    const callService = new CallService(callLog);
-    const resp = await callService.receiveCall(req);
-
-    return res.type('text/xml').send(resp);
 };
 
 export const leaveVoiceMail = async (req: Request, res: Response) => {
-    const twiml = new VoiceResponse();
-    const callLog = await CallLog.findOne({ phoneCallSid: req.body.CallSid });
-    if (!callLog) {
-        twiml.play(`${SERVER_URL}/audio/${AudioPresets.ERROR}`)
-        twiml.hangup();
-        return res.type('text/xml').send(twiml.toString());
-    }
+    try {
+        const twiml = new VoiceResponse();
+        const callLog = await CallLog.findOne({ phoneCallSid: req.body.CallSid });
+        if (!callLog) {
+            twiml.play(`${SERVER_URL}/audio/${AudioPresets.ERROR}`)
+            twiml.hangup();
+            return res.type('text/xml').send(twiml.toString());
+        }
 
-    const callService = new CallService(callLog);
-    const resp = await callService.leaveVoicemail();
-    return res.type('text/xml').send(resp);
+        const callService = new CallService(callLog);
+        const resp = await callService.leaveVoicemail();
+
+        return res.type('text/xml').send(resp);
+    } catch (error) {
+        console.error('Error leaving voicemail:', error);
+        return res.status(500).send();
+    }
 }
 
 export const handleCallStatusUpdate = async (req: Request, res: Response) => {
@@ -58,7 +69,9 @@ export const handleCallStatusUpdate = async (req: Request, res: Response) => {
         const callService = new CallService(callLog);
         if (CallStatus === 'completed') {
             await callService.updateStatus(CallLogStatus.ANSWERED, RecordingUrl);
-        } else if (!intermediateStates.includes(CallStatus))  {
+        } else if (CallStatus === 'no-answer') {
+            await callService.leaveVoicemail();
+        } else if (!intermediateStates.includes(CallStatus)) {
             const prescription = await Prescription.findById(callLog.prescription).populate('patient');
             if (prescription) {
                 callService.sendMessage(prescription);
