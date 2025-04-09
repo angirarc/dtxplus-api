@@ -20,9 +20,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Error handling middleware
-app.use(errorHandler);
-
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/dtx-plus';
 
@@ -45,6 +42,9 @@ app.use('/audio', cors(), express.static('src/audio', {
         }
     }
 }));
+
+// Error handling middleware
+app.use(errorHandler);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
