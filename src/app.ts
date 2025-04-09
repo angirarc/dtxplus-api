@@ -34,7 +34,7 @@ app.use('/patients', patientRoutes);
 app.use('/call-logs', callLogRoutes);
 app.use('/prescriptions', prescriptionRoutes);
 
-app.use('/audio', cors(), express.static('src/audio', {
+app.use('/audio', express.static('src/audio', {
     setHeaders: (res, path) => {
         if (path.endsWith('.mp3')) {
             res.set('Content-Type', 'audio/mpeg');
